@@ -1,15 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-// src/App.jsx
+import React, { useState } from "react";
 
 function App() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    message: "",
+    dateTime: "",
   });
 
   const handleChange = (e) => {
@@ -19,6 +13,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await fetch("http://localhost:5000/api/save", {
         method: "POST",
@@ -27,56 +22,45 @@ function App() {
         },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
-        alert("Datos enviados correctamente");
-        setFormData({ name: "", email: "", message: "" });
+        alert("Formulario enviado con éxito.");
+        setFormData({ name: "", dateTime: "" });
       } else {
-        alert("Error al enviar los datos");
+        alert("Error al enviar el formulario.");
       }
     } catch (error) {
-      console.error("Error al enviar los datos:", error);
-      alert("No se pudo conectar con el servidor.");
+      console.error("Error al conectar con el backend:", error);
+      alert("No se pudo enviar el formulario.");
     }
   };
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Formulario en React</h1>
+      <h1>Formulario con Fecha y Hora</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>
-            Nombre:
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </label>
+          <label>Nombre:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div>
-          <label>
-            Correo Electrónico:
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Mensaje:
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-            />
-          </label>
+          <label>Fecha y Hora:</label>
+          <input
+            type="datetime-local"
+            name="dateTime"
+            min="2024-11-27T05:00" 
+            max="2024-11-28T20:00" 
+            step="3600"
+            value={formData.dateTime}
+            onChange={handleChange}
+            required
+          />
         </div>
         <button type="submit">Enviar</button>
       </form>

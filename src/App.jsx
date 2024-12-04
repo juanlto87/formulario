@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers/StaticDateTimePicker";
+import dayjs from "dayjs";
 
 function App() {
   let fechaHoy = new Date();
@@ -94,24 +95,23 @@ function App() {
           />
         </div>
         <div>
-          <label>Fecha y Hora:</label>
-          <input
-            type="datetime-local"
-            name="dateTime"
-            min={fechaHoy}
-            max={fechaSieteDias}
-            value={formData.dateTime}
-            onChange={handleChange}
-            required
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <StaticDateTimePicker
+              label="Selecciona una fecha"
+              orientation="portrait"
+              value={fecha}
+              onChange={handleChangeDate}
+              minDate={dayjs(fechaHoy)}
+              maxDate={dayjs(fechaSieteDias)}
+              slotProps={{
+                actionBar: {
+                  actions: ["today"],
+                },
+              }}
+            />
+          </LocalizationProvider>
         </div>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <StaticDateTimePicker
-            orientation="landscape"
-            value={fecha}
-            onChange={handleChangeDate}
-          />
-        </LocalizationProvider>
+
         <button type="submit">Reservar</button>
       </form>
     </div>

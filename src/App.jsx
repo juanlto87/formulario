@@ -1,11 +1,45 @@
 import React, { useState } from "react";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { StaticDateTimePicker } from "@mui/x-date-pickers/StaticDateTimePicker";
 
 function App() {
+  let fechaHoy = new Date();
+  let fechaSieteDias = new Date();
+  fechaSieteDias.setDate(fechaHoy.getDate() + 6);
+  fechaSieteDias =
+    fechaSieteDias.getFullYear() +
+    "-" +
+    String(fechaSieteDias.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(fechaSieteDias.getDate()).padStart(2, "0") +
+    "T" +
+    String(fechaSieteDias.getHours()).padStart(2, "0") +
+    ":" +
+    String(fechaSieteDias.getMinutes()).padStart(2, "0");
+  fechaHoy =
+    fechaHoy.getFullYear() +
+    "-" +
+    String(fechaHoy.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(fechaHoy.getDate()).padStart(2, "0") +
+    "T" +
+    String(fechaHoy.getHours()).padStart(2, "0") +
+    ":" +
+    String(fechaHoy.getMinutes()).padStart(2, "0");
+
+  const [fecha, setFecha] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
+    phone: "",
     dateTime: "",
   });
 
+  function handleChangeDate(newValue) {
+    setFecha(newValue); // Actualizar el estado con la fecha seleccionada
+    formData.dateTime = newValue;
+    console.log("Fecha seleccionada:", newValue);
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -25,7 +59,7 @@ function App() {
 
       if (response.ok) {
         alert("Formulario enviado con éxito.");
-        setFormData({ name: "", dateTime: "" });
+        setFormData({ name: "", phone: "", dateTime: "" });
       } else {
         alert("Error al enviar el formulario.");
       }
@@ -37,10 +71,10 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Formulario con Fecha y Hora</h1>
+      <h1>Ingresa los datos para tu reserva</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Nombre:</label>
+          <label>Nombre Completo:</label>
           <input
             type="text"
             name="name"
@@ -50,19 +84,35 @@ function App() {
           />
         </div>
         <div>
+          <label>Teléfono:</label>
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
           <label>Fecha y Hora:</label>
           <input
             type="datetime-local"
             name="dateTime"
-            min="2024-11-27T05:00" 
-            max="2024-11-28T20:00" 
-            step="3600"
+            min={fechaHoy}
+            max={fechaSieteDias}
             value={formData.dateTime}
             onChange={handleChange}
             required
           />
         </div>
-        <button type="submit">Enviar</button>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <StaticDateTimePicker
+            orientation="landscape"
+            value={fecha}
+            onChange={handleChangeDate}
+          />
+        </LocalizationProvider>
+        <button type="submit">Reservar</button>
       </form>
     </div>
   );

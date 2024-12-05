@@ -7,6 +7,11 @@ import dayjs from "dayjs";
 function App() {
   let fechaHoy = new Date();
   let fechaSieteDias = new Date();
+  const isSunday = (date) => {
+    const day = date.day();
+
+    return day === 0;
+  };
   fechaSieteDias.setDate(fechaHoy.getDate() + 6);
   fechaSieteDias =
     fechaSieteDias.getFullYear() +
@@ -14,38 +19,36 @@ function App() {
     String(fechaSieteDias.getMonth() + 1).padStart(2, "0") +
     "-" +
     String(fechaSieteDias.getDate()).padStart(2, "0") +
-    "T" +
-    String(fechaSieteDias.getHours()).padStart(2, "0") +
-    ":" +
-    String(fechaSieteDias.getMinutes()).padStart(2, "0");
+    "T20:00";
   fechaHoy =
     fechaHoy.getFullYear() +
     "-" +
     String(fechaHoy.getMonth() + 1).padStart(2, "0") +
     "-" +
     String(fechaHoy.getDate()).padStart(2, "0") +
-    "T" +
-    String(fechaHoy.getHours()).padStart(2, "0") +
-    ":" +
-    String(fechaHoy.getMinutes()).padStart(2, "0");
+    "T05:00";
 
   const [fecha, setFecha] = useState(null);
+  const [sedeSeleccionada, setSedeSeleccionada] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    sede: "",
     dateTime: "",
   });
 
   function handleChangeDate(newValue) {
     setFecha(newValue); // Actualizar el estado con la fecha seleccionada
     formData.dateTime = newValue;
-    console.log("Fecha seleccionada:", newValue);
   }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+  const handleChangeSede = (event) => {
+    setSedeSeleccionada(event.target.value); // Actualiza el valor seleccionado
+    formData.sede = event.target.value;
+  };
   const deshabilitarDomingos = (date) => {
     // El domingo es el día 0 en JavaScript
     return date.getDay() === 0; // Retorna true si es domingo
@@ -55,13 +58,16 @@ function App() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://blackbox-abeb3-default-rtdb.firebaseio.com/citas.json",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         alert("Formulario enviado con éxito.");
@@ -99,6 +105,33 @@ function App() {
             required
           />
         </div>
+        <h3>Selecciona una Sede:</h3>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="sede" // El mismo nombre para agrupar los botones
+              value="condado"
+              checked={sedeSeleccionada === "condado"}
+              onChange={handleChangeSede}
+              required
+            />
+            Sede Condado
+          </label>
+        </div>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="sede"
+              value="calderon"
+              checked={sedeSeleccionada === "calderon"}
+              onChange={handleChangeSede}
+              required
+            />
+            Sede Calderon
+          </label>
+        </div>
         <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <StaticDateTimePicker
@@ -108,11 +141,17 @@ function App() {
               onChange={handleChangeDate}
               minDate={dayjs(fechaHoy)}
               maxDate={dayjs(fechaSieteDias)}
+              minTime={dayjs(fechaHoy)}
+              maxTime={dayjs(fechaSieteDias)}
+              shouldDisableDate={isSunday}
+              views={["year", "month", "day", "hours"]}
+              ampm={false}
               slotProps={{
                 actionBar: {
-                  actions: ["today"],
+                  actions: [],
                 },
               }}
+              required
             />
           </LocalizationProvider>
         </div>

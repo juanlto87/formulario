@@ -12,6 +12,7 @@ function App() {
 
     return day === 0;
   };
+
   fechaSieteDias.setDate(fechaHoy.getDate() + 6);
   fechaSieteDias =
     fechaSieteDias.getFullYear() +
@@ -72,6 +73,8 @@ function App() {
       if (response.ok) {
         alert("Formulario enviado con éxito.");
         setFormData({ name: "", phone: "", dateTime: "" });
+        setFecha(null);
+        setSedeSeleccionada("");
       } else {
         alert("Error al enviar el formulario.");
       }

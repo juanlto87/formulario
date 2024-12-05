@@ -46,6 +46,11 @@ function App() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const deshabilitarDomingos = (date) => {
+    // El domingo es el día 0 en JavaScript
+    return date.getDay() === 0; // Retorna true si es domingo
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -103,6 +108,7 @@ function App() {
               onChange={handleChangeDate}
               minDate={dayjs(fechaHoy)}
               maxDate={dayjs(fechaSieteDias)}
+              shouldDisableDate={deshabilitarDomingos}
               slotProps={{
                 actionBar: {
                   actions: ["today"],

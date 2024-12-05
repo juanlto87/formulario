@@ -108,7 +108,6 @@ function App() {
               onChange={handleChangeDate}
               minDate={dayjs(fechaHoy)}
               maxDate={dayjs(fechaSieteDias)}
-              shouldDisableDate={deshabilitarDomingos}
               slotProps={{
                 actionBar: {
                   actions: ["today"],

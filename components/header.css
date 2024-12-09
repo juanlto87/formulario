@@ -1,0 +1,16 @@
+@font-face {
+  font-family: "WarIsOver";
+  src: url("../assets/War_is_Over.ttf");
+}
+img {
+  padding: 30px;
+  padding-left: 60px;
+}
+
+p.header {
+  margin: 60px;
+  padding-left: 60px;
+  font-family: "WarIsOver";
+  font-size: 108px;
+  line-height: 1;
+}

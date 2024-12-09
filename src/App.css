@@ -1,0 +1,15 @@
+#derecha {
+  float: right;
+  width: 50%;
+  margin-right: 60px;
+}
+
+#izquierda {
+  float: left;
+  width: 45%;
+}
+
+#contenedor {
+  display: table;
+  margin: auto;
+}

@@ -3,14 +3,14 @@
   src: url("../assets/War_is_Over.ttf");
 }
 img {
-  padding: 30px;
-  padding-left: 60px;
+  padding: 2rem;
+  padding-left: 3rem;
 }
 
 p.header {
-  margin: 60px;
-  padding-left: 60px;
+  margin: 3rem;
+  padding-left: 3rem;
   font-family: "WarIsOver";
-  font-size: 108px;
+  font-size: 6.5rem;
   line-height: 1;
 }

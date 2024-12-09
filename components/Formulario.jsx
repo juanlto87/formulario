@@ -88,9 +88,9 @@ export default function Formulario() {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <p>Ingresa los datos para tu reserva</p>
+        <h3>Ingresa los datos para tu reserva</h3>
         <div>
-          <label>Nombre Completo:</label>
+          <label>Nombre Completo: </label>
           <input
             type="text"
             name="name"
@@ -100,7 +100,7 @@ export default function Formulario() {
           />
         </div>
         <div>
-          <label>Teléfono:</label>
+          <label>Teléfono: </label>
           <input
             type="text"
             name="phone"
@@ -120,7 +120,7 @@ export default function Formulario() {
               onChange={handleChangeSede}
               required
             />
-            Sede Condado
+            Condado
           </label>
         </div>
         <div>
@@ -133,33 +133,41 @@ export default function Formulario() {
               onChange={handleChangeSede}
               required
             />
-            Sede Calderon
+            Calderón
           </label>
         </div>
-        <div>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StaticDateTimePicker
-              label="Selecciona una fecha"
-              orientation="portrait"
-              value={fecha}
-              onChange={handleChangeDate}
-              minDate={dayjs(fechaHoy)}
-              maxDate={dayjs(fechaSieteDias)}
-              minTime={dayjs(fechaHoy)}
-              maxTime={dayjs(fechaSieteDias)}
-              shouldDisableDate={isSunday}
-              views={["year", "month", "day", "hours"]}
-              ampm={false}
-              slotProps={{
-                actionBar: {
-                  actions: [],
-                },
-              }}
-              required
-            />
-          </LocalizationProvider>
-        </div>
-        <button type="submit">Reservar</button>
+        <h3>Selecciona la fecha y hora:</h3>
+        <center>
+          <div className="fecha">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <StaticDateTimePicker
+                orientation="portrait"
+                value={fecha}
+                onChange={handleChangeDate}
+                minDate={dayjs(fechaHoy)}
+                maxDate={dayjs(fechaSieteDias)}
+                minTime={dayjs(fechaHoy)}
+                maxTime={dayjs(fechaSieteDias)}
+                shouldDisableDate={isSunday}
+                views={["year", "month", "day", "hours"]}
+                ampm={false}
+                components={{
+                  Toolbar: null, // Deshabilitar la Toolbar
+                }}
+                slotProps={{
+                  actionBar: {
+                    actions: [],
+                  },
+                  toolbar: {},
+                }}
+                required
+              />
+            </LocalizationProvider>
+          </div>
+        </center>
+        <center>
+          <button type="submit">Reservar</button>
+        </center>
       </form>
     </>
   );

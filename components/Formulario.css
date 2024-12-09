@@ -1,7 +1,20 @@
-form {
-  margin: 5.2rem;
+p {
+  font-size: 1.3rem;
 }
 
-p {
-  font-size: 24px;
+input[type="text"] {
+  width: 50%;
+}
+
+.fecha {
+  width: 90%;
+}
+
+button {
+  background-color: "#00A2C6";
+  margin: 1rem;
+}
+
+.MuiPickersLayout-root {
+  background-color: rgba(255, 255, 255, 0.5);
 }

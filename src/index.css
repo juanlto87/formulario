@@ -2,6 +2,7 @@
   font-family: "BwModelica";
   src: url("../assets/BwModelicaExtraBoldCondensed.otf");
 }
+
 :root {
   font-family: "BwModelica", Inter, system-ui, Avenir, Helvetica;
   line-height: 1.5;
@@ -46,14 +47,11 @@ button {
   font-family: inherit;
   background-color: #00a2c6;
   cursor: pointer;
+  color: #ffffff;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #7caeb9;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  opacity: 0.8;
 }
 
 @media (prefers-color-scheme: light) {

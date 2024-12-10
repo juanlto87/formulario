@@ -1,34 +1,19 @@
+.contenedor {
+  margin: auto;
+  overflow: hidden;
+  max-width: 1500px;
+}
+
 .derecha {
   width: 50%;
   margin-left: 0;
   margin-top: 7rem;
+  float: left;
+  bottom: 0;
 }
 
 .izquierda {
-  margin: 5rem;
-  margin-top: 0rem;
+  margin: 0rem 5rem;
   width: 30%;
-}
-
-.condado {
-  float: right;
-  width: 50%;
-  text-align: center;
-}
-.calderon {
   float: left;
-  width: 50%;
-  text-align: center;
-}
-.contenedor {
-  margin: auto;
-  display: flex;
-}
-
-.texto {
-  background: rgba(12, 10, 10, 0.5);
-  text-align: center;
-  border-radius: 15px;
-  padding: 2rem;
-  text-decoration: none;
 }

@@ -4,8 +4,10 @@ p {
 
 input[type="text"] {
   width: 50%;
+  float: right;
 }
-
+label {
+}
 .fecha {
   width: 90%;
 }

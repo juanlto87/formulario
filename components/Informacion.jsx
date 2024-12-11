@@ -1,4 +1,5 @@
 import "./informacion.css";
+import ubicacion from "../assets/ubicacion.png";
 
 export default function Informacion() {
   return (
@@ -13,20 +14,24 @@ export default function Informacion() {
         capacidad de cada persona. ¡Ideal para quienes buscan un estilo de vida
         activo, comunidad y resultados!
       </p>
-      <div className="condado">
-        Sede Condado
-        <br />
-        <br /> Tomasa Mideros y Juana Terrazas,
-        <br /> esquina(entrada a General Norte <br />
-        del Estadio LDU)
-      </div>
       <div className="calderon">
-        Sede Calderon
-        <br />
-        <br />
-        Capitán Giovanni Calles entre
-        <br />
-        Caran y Av. Cacha
+        <a href="https://maps.app.goo.gl/4fXvHZSgLNWDSXMC6">
+          <h3>Sede Calderón</h3>
+          <img src={ubicacion} alt="Ubicacion" />
+          <br />
+          Capitán Giovanni Calles entre
+          <br />
+          Caran y Av. Cacha
+        </a>
+      </div>
+      <div className="condado">
+        <a href="https://maps.app.goo.gl/1r6Qd8PEHWUpVR7F8">
+          <h3>Sede Condado</h3>
+          <img src={ubicacion} alt="Ubicacion" />
+          <br /> Tomasa Mideros y Juana Terrazas,
+          <br /> esquina(entrada a General Norte <br />
+          del Estadio LDU)
+        </a>
       </div>
     </>
   );

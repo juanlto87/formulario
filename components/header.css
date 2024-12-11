@@ -2,7 +2,7 @@
   font-family: "WarIsOver";
   src: url("../assets/War_is_Over.ttf");
 }
-img {
+.logo {
   padding: 2rem;
   padding-left: 3rem;
 }

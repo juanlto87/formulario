@@ -6,4 +6,17 @@
 
 footer {
   background-color: #191713;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 700px) {
+  footer {
+    display: block;
+  }
+  .footer {
+    width: 90%;
+    padding: 1rem 0;
+  }
 }

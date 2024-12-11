@@ -7,7 +7,7 @@
   src: url("../assets/BwModelicaSS01DEMO-Medium.otf");
 }
 :root {
-  font-family: "BwModelica", Inter, system-ui, Avenir, Helvetica;
+  font-family: "BwModelicaLight", Inter, system-ui, Avenir, Helvetica;
   line-height: 1.5;
   font-weight: 400;
 
@@ -23,11 +23,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #fff;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #00a2c6;
 }
 
 body {
@@ -56,17 +56,4 @@ button {
 }
 button:hover {
   opacity: 0.8;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #00a2c6;
-  }
 }

@@ -4,7 +4,7 @@ import "./header.css";
 export default function Header() {
   return (
     <header>
-      <img src={reacImag} alt="Logo-Blackbox" />
+      <img src={reacImag} className="logo" alt="Logo_Blackbox" />
       <p className="header">
         TRANSFORMA
         <br /> TU CUERPO, <br />

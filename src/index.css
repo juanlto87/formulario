@@ -2,7 +2,10 @@
   font-family: "BwModelica";
   src: url("../assets/BwModelicaExtraBoldCondensed.otf");
 }
-
+@font-face {
+  font-family: "BwModelicaLight";
+  src: url("../assets/BwModelicaSS01DEMO-Medium.otf");
+}
 :root {
   font-family: "BwModelica", Inter, system-ui, Avenir, Helvetica;
   line-height: 1.5;
@@ -29,10 +32,11 @@ a:hover {
 
 body {
   margin: 0;
-  background-image: url("../assets/fondo.jpg");
+  background-image: url("../assets/fondo2.jpg");
   color: #ffffff;
   font-size: 18px;
   line-height: 1.5;
+  background-size: cover;
 }
 
 h1 {

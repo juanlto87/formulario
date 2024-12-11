@@ -17,6 +17,7 @@ export default function Footer() {
       </div>
       <div className="footer">
         <center>
+          <img src="../assets/instagram_2111463.png" />
           Instagram:
           <br /> @blackbox_crosstraining_condado
           <br /> @blackbox.crosstrainig

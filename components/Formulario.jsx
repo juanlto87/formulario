@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { StaticDateTimePicker } from "@mui/x-date-pickers/StaticDateTimePicker";
+import React, {useState} from "react";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {StaticDateTimePicker} from "@mui/x-date-pickers/StaticDateTimePicker";
 import dayjs from "dayjs";
 import "./Formulario.css";
 
@@ -44,8 +44,8 @@ export default function Formulario() {
     formData.dateTime = newValue;
   }
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const {name, value} = e.target;
+    setFormData({...formData, [name]: value});
   };
   const handleChangeSede = (event) => {
     setSedeSeleccionada(event.target.value); // Actualiza el valor seleccionado
@@ -61,7 +61,7 @@ export default function Formulario() {
 
     try {
       const response = await fetch(
-        "https://blackbox-abeb3-default-rtdb.firebaseio.com/citas.json",
+        "https://us-central1-blackbox-abeb3.cloudfunctions.net/submitFormu",
         {
           method: "POST",
           headers: {
@@ -73,7 +73,7 @@ export default function Formulario() {
 
       if (response.ok) {
         alert("Formulario enviado con éxito.");
-        setFormData({ name: "", phone: "", dateTime: "" });
+        setFormData({name: "", phone: "", dateTime: ""});
         setFecha(null);
         setSedeSeleccionada("");
       } else {
@@ -88,7 +88,9 @@ export default function Formulario() {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <h3>Ingresa los datos para tu reserva</h3>
+        <h3>
+          Reserva tu primera clase <strong>GRATIS</strong>
+        </h3>
         <div>
           <label>Nombre Completo: </label>
           <input

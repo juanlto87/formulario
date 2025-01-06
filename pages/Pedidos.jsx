@@ -5,11 +5,44 @@ import axios from "axios";
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
+  const [fechaHoy, setFechaHoy] = useState({});
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
 
-  function actualiza() {
-    console.log("Actualiza");
+  function actualizaCierre(tipo, id, event) {
+    console.log(event.target.value, id, tipo);
+  }
+
+  const enviarPedido = async (pedidoData) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:1235/pedidos",
+        pedidoData
+      );
+      if (response.status === 201) {
+        alert("Pedido creado exitosamente");
+        // Recargar los pedidos
+      }
+    } catch (error) {
+      console.error("Error al crear el pedido:", error);
+      alert("Error al crear el pedido");
+    }
+  };
+
+  function creaCierre(tipo, event) {
+    const pedidoData = {
+      fecha: new Date().toISOString(),
+      caja: 0,
+      active: 0,
+      agua: 0,
+      gatorade: 0,
+      monster: 0,
+    };
+
+    // Actualizar el valor correspondiente según el tipo
+    pedidoData[tipo] = parseFloat(event.target.value) || 0;
+
+    enviarPedido(pedidoData);
   }
 
   function canvasToBlob(canvas) {
@@ -111,7 +144,7 @@ function Pedidos() {
           requestOptions
         )
           .then((response) => response.text())
-          .then((result) => console.log(result))
+          .then((result) => alert("Mensaje enviado"))
           .catch((error) => console.error(error));
       } else {
         console.error("Error al subir la imagen");
@@ -120,10 +153,10 @@ function Pedidos() {
       console.error("Error al convertir Canvas:", error);
     }
   }
-  fetch("http://localhost:1234/productos/")
+  /* fetch("http://localhost:1234/productos/")
     .then((response) => response.json())
     .then((data) => setProductos(data))
-    .catch((error) => setError("Error al cargar los pedidos"));
+    .catch((error) => setError("Error al cargar los pedidos")); */
 
   useEffect(() => {
     fetch("http://localhost:1234/pedidos/")
@@ -134,18 +167,8 @@ function Pedidos() {
 
   if (error) return <div className="error">{error}</div>;
 
-  const isToday = (dateString) => {
-    const today = new Date();
-    const date = new Date(dateString);
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
-
   //const hoy = isToday("2025-01-04");
-
+  let renderizaHoy = true;
   return (
     <div>
       <h2>Lista de Cierres</h2>
@@ -154,66 +177,157 @@ function Pedidos() {
           <tr>
             <th>Fecha</th>
             <th>Caja</th>
-            {productos.map((producto) => (
+            <th>Caja</th>
+            <th>Caja</th>
+            <th>Caja</th>
+            <th>Caja</th>
+            {/* {productos.map((producto) => (
               <th
                 key={producto.id}
               >{`${producto.nombre} $${producto.precio}`}</th>
-            ))}
+            ))} */}
           </tr>
         </thead>
         <tbody>
-          {pedidos.map((pedido) => (
-            <tr key={pedido.id}>
+          {pedidos.map((pedido) => {
+            if (
+              new Date(pedido.fecha).toISOString().slice(0, 10) ===
+              new Date().toISOString().slice(0, 10)
+            ) {
+              renderizaHoy = false;
+            }
+            return (
+              <tr key={pedido.id}>
+                <td>
+                  <input
+                    type="date"
+                    defaultValue={formatearFecha(pedido.fecha)}
+                    onChange={actualizaCierre}
+                    disabled={true}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    defaultValue={pedido.caja}
+                    onChange={(event) =>
+                      actualizaCierre("Caja", pedido.id, event)
+                    }
+                    disabled={
+                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                      new Date().toISOString().slice(0, 10)
+                        ? false
+                        : true
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    defaultValue={pedido.active}
+                    onChange={actualizaCierre}
+                    disabled={
+                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                      new Date().toISOString().slice(0, 10)
+                        ? false
+                        : true
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    defaultValue={pedido.agua}
+                    onChange={actualizaCierre}
+                    disabled={
+                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                      new Date().toISOString().slice(0, 10)
+                        ? false
+                        : true
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    defaultValue={pedido.gatorade}
+                    onChange={actualizaCierre}
+                    disabled={
+                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                      new Date().toISOString().slice(0, 10)
+                        ? false
+                        : true
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    defaultValue={pedido.monster}
+                    onChange={actualizaCierre}
+                    disabled={
+                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                      new Date().toISOString().slice(0, 10)
+                        ? false
+                        : true
+                    }
+                  />
+                </td>
+              </tr>
+            );
+          })}
+          {renderizaHoy && (
+            <tr>
               <td>
                 <input
                   type="date"
-                  value={formatearFecha(pedido.fecha)}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  defaultValue={new Date().toISOString().slice(0, 10)}
+                  disabled={true}
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={pedido.caja}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  defaultValue="0"
+                  min="0"
+                  step="0.01"
+                  onChange={(event) => creaCierre("caja", event)}
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={pedido.active}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  min="0"
+                  defaultValue="0"
+                  onChange={creaCierre}
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={pedido.agua}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  min="0"
+                  defaultValue="0"
+                  onChange={creaCierre}
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={pedido.gatorade}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  min="0"
+                  defaultValue="0"
+                  onChange={creaCierre}
                 />
               </td>
               <td>
                 <input
                   type="number"
-                  value={pedido.monster}
-                  onChange={actualiza}
-                  disabled={!isToday(pedido.fecha)}
+                  min="0"
+                  defaultValue="0"
+                  onChange={creaCierre}
                 />
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
       <button onClick={handleCaptureAndSend}>Enviar a WhatsApp</button>

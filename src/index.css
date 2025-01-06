@@ -30,6 +30,10 @@ a:hover {
   color: #00a2c6;
 }
 
+input {
+  padding: 0.3em 0.3em;
+}
+
 body {
   margin: 0;
   background-image: url("../assets/fondo2.jpg");

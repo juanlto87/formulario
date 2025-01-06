@@ -1,0 +1,60 @@
+.contenedor {
+  margin: auto;
+  overflow: hidden;
+  max-width: 1500px;
+  margin-left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.derecha {
+  width: 50%;
+  margin-left: 0;
+  margin-top: 7rem;
+  float: left;
+  bottom: 0;
+}
+
+.izquierda {
+  margin: 0rem 5rem;
+  width: 30%;
+  float: left;
+}
+
+h3 {
+  font-family: "BwModelica", Inter, system-ui, Avenir, Helvetica;
+}
+
+@media (max-width: 700px) {
+  .contenedor {
+    display: block;
+  }
+  .derecha,
+  .izquierda,
+  p.header {
+    width: 90%;
+    margin: 0px;
+    padding-left: 0px;
+  }
+  p.header {
+    font-size: 5rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    background-size: cover;
+  }
+
+  button {
+    padding: 0.7rem;
+    font-size: 1em;
+    width: 80%;
+  }
+}

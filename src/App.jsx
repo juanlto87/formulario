@@ -1,24 +1,20 @@
-import Header from "../components/Header";
-import Formulario from "../components/Formulario";
-import Informacion from "../components/Informacion";
-import Footer from "../components/Footer";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import "./App.css";
+import LandingForm from "../pages/LandingForm";
+import Pedidos from "../pages/Pedidos";
+import RootLayout from "../pages/Root";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [{path: "/pedidos", element: <Pedidos />}],
+  },
+  {path: "/reserva", element: <LandingForm />},
+]);
 
 function App() {
-  return (
-    <>
-      <Header />
-      <section className="contenedor">
-        <div className="izquierda">
-          <Formulario />
-        </div>
-        <div className="derecha">
-          <Informacion />
-        </div>
-      </section>
-      <Footer />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

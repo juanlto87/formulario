@@ -9,40 +9,57 @@ function Pedidos() {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
 
+  const prods = useRef([]);
+
   function actualizaCierre(tipo, id, event) {
     console.log(event.target.value, id, tipo);
   }
 
-  const enviarPedido = async (pedidoData) => {
+  async function enviarPedido(pedidoData) {
     try {
-      const response = await axios.post(
-        "http://localhost:1235/pedidos",
-        pedidoData
-      );
-      if (response.status === 201) {
-        alert("Pedido creado exitosamente");
-        // Recargar los pedidos
+      console.log(pedidoData);
+      const response = await fetch("http://localhost:1234/pedidos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pedidoData),
+      });
+
+      if (response.ok) {
+        alert("Formulario enviado con éxito.");
+      } else {
+        alert("Error al enviar el formulario.");
       }
     } catch (error) {
       console.error("Error al crear el pedido:", error);
       alert("Error al crear el pedido");
     }
-  };
+  }
 
-  function creaCierre(tipo, event) {
+  function creaCierre() {
     const pedidoData = {
-      fecha: new Date().toISOString(),
-      caja: 0,
-      active: 0,
-      agua: 0,
-      gatorade: 0,
-      monster: 0,
+      fecha: new Date().toISOString().slice(0, 10),
+      caja: +prods.current[0].value,
+      coach: "Juan",
+      ubicacion: "Condado",
+      productos: [
+        {id: 1, cantidad: +prods.current[1].value},
+        {id: 2, cantidad: +prods.current[2].value},
+        {id: 3, cantidad: +prods.current[3].value},
+        {id: 4, cantidad: +prods.current[4].value},
+      ],
     };
 
-    // Actualizar el valor correspondiente según el tipo
-    pedidoData[tipo] = parseFloat(event.target.value) || 0;
-
-    enviarPedido(pedidoData);
+    if (
+      prods.current[0].value > 0 &&
+      prods.current[1].value > 0 &&
+      prods.current[2].value > 0 &&
+      prods.current[3].value > 0 &&
+      prods.current[4].value > 0
+    ) {
+      enviarPedido(pedidoData);
+    }
   }
 
   function canvasToBlob(canvas) {
@@ -177,10 +194,10 @@ function Pedidos() {
           <tr>
             <th>Fecha</th>
             <th>Caja</th>
-            <th>Caja</th>
-            <th>Caja</th>
-            <th>Caja</th>
-            <th>Caja</th>
+            <th>Active</th>
+            <th>Agua</th>
+            <th>Gatorade</th>
+            <th>Monster</th>
             {/* {productos.map((producto) => (
               <th
                 key={producto.id}
@@ -282,7 +299,7 @@ function Pedidos() {
                 <input
                   type="date"
                   defaultValue={new Date().toISOString().slice(0, 10)}
-                  disabled={true}
+                  disabled={false}
                 />
               </td>
               <td>
@@ -291,14 +308,7 @@ function Pedidos() {
                   defaultValue="0"
                   min="0"
                   step="0.01"
-                  onChange={(event) => creaCierre("caja", event)}
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="0"
-                  defaultValue="0"
+                  ref={(el) => (prods.current[0] = el)}
                   onChange={creaCierre}
                 />
               </td>
@@ -307,6 +317,7 @@ function Pedidos() {
                   type="number"
                   min="0"
                   defaultValue="0"
+                  ref={(el) => (prods.current[1] = el)}
                   onChange={creaCierre}
                 />
               </td>
@@ -315,6 +326,7 @@ function Pedidos() {
                   type="number"
                   min="0"
                   defaultValue="0"
+                  ref={(el) => (prods.current[2] = el)}
                   onChange={creaCierre}
                 />
               </td>
@@ -323,6 +335,16 @@ function Pedidos() {
                   type="number"
                   min="0"
                   defaultValue="0"
+                  ref={(el) => (prods.current[3] = el)}
+                  onChange={creaCierre}
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  min="0"
+                  defaultValue="0"
+                  ref={(el) => (prods.current[4] = el)}
                   onChange={creaCierre}
                 />
               </td>

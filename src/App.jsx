@@ -5,12 +5,12 @@ import Pedidos from "../pages/Pedidos";
 import RootLayout from "../pages/Root";
 
 const router = createBrowserRouter([
+  {path: "/", element: <LandingForm />},
   {
-    path: "/",
+    path: "/menu",
     element: <RootLayout />,
-    children: [{path: "/pedidos", element: <Pedidos />}],
+    children: [{path: "pedidos", element: <Pedidos />}],
   },
-  {path: "/reserva", element: <LandingForm />},
 ]);
 
 function App() {

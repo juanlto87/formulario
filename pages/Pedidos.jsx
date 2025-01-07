@@ -1,24 +1,49 @@
-import {useState, useEffect, useRef} from "react";
+import {useState, useRef} from "react";
 import React from "react";
 import html2canvas from "html2canvas";
-import axios from "axios";
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
-  const [fechaHoy, setFechaHoy] = useState({});
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
 
   const prods = useRef([]);
+  //const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
+  const servicio = "http://localhost:1234/";
 
-  function actualizaCierre(tipo, id, event) {
-    console.log(event.target.value, id, tipo);
+  const obtenerValoresProductos = () => {
+    return prods.current.map((ref, index) => ({
+      id: index,
+      cantidad: parseFloat(ref?.value) || 0,
+    }));
+  };
+
+  const validarPrecios = () => {
+    return prods.current.every((ref) => ref && ref.value > 0);
+  };
+
+  function creaCierre() {
+    const products = obtenerValoresProductos().filter(
+      (producto) => producto.id !== 0
+    );
+
+    const pedidoData = {
+      fecha: new Date().toISOString().slice(0, 10),
+      caja: +prods.current[0].value,
+      coach: "Juan",
+      ubicacion: "Condado",
+      productos: products,
+    };
+
+    if (validarPrecios()) {
+      setPedidos([...pedidos, pedidoData]);
+      creaBDD(pedidoData);
+    }
   }
 
-  async function enviarPedido(pedidoData) {
+  async function creaBDD(pedidoData) {
     try {
-      console.log(pedidoData);
-      const response = await fetch("http://localhost:1234/pedidos", {
+      const response = await fetch(`${servicio}pedidos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,28 +62,40 @@ function Pedidos() {
     }
   }
 
-  function creaCierre() {
+  function actualizaCierre(id) {
+    const products = obtenerValoresProductos().filter(
+      (producto) => producto.id !== 0
+    );
+
     const pedidoData = {
-      fecha: new Date().toISOString().slice(0, 10),
+      id: id,
       caja: +prods.current[0].value,
-      coach: "Juan",
-      ubicacion: "Condado",
-      productos: [
-        {id: 1, cantidad: +prods.current[1].value},
-        {id: 2, cantidad: +prods.current[2].value},
-        {id: 3, cantidad: +prods.current[3].value},
-        {id: 4, cantidad: +prods.current[4].value},
-      ],
+      productos: products,
     };
 
-    if (
-      prods.current[0].value > 0 &&
-      prods.current[1].value > 0 &&
-      prods.current[2].value > 0 &&
-      prods.current[3].value > 0 &&
-      prods.current[4].value > 0
-    ) {
-      enviarPedido(pedidoData);
+    if (validarPrecios()) {
+      actualizaBDD(pedidoData);
+    }
+  }
+
+  async function actualizaBDD(pedidoData) {
+    try {
+      const response = await fetch(`${servicio}pedidos/${pedidoData.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pedidoData),
+      });
+
+      if (response.ok) {
+        alert("Formulario actualizado con éxito.");
+      } else {
+        alert("Error al enviar el formulario.");
+      }
+    } catch (error) {
+      console.error("Error al crear el pedido:", error);
+      alert("Error al crear el pedido");
     }
   }
 
@@ -170,17 +207,15 @@ function Pedidos() {
       console.error("Error al convertir Canvas:", error);
     }
   }
-  /* fetch("http://localhost:1234/productos/")
+  fetch(`${servicio}productos/`)
     .then((response) => response.json())
     .then((data) => setProductos(data))
-    .catch((error) => setError("Error al cargar los pedidos")); */
+    .catch((error) => setError("Error al cargar los pedidos"));
 
-  useEffect(() => {
-    fetch("http://localhost:1234/pedidos/")
-      .then((response) => response.json())
-      .then((data) => setPedidos(data))
-      .catch((error) => setError("Error al cargar los pedidos"));
-  }, []);
+  fetch(`${servicio}pedidos/`)
+    .then((response) => response.json())
+    .then((data) => setPedidos(data))
+    .catch((error) => setError("Error al cargar los pedidos"));
 
   if (error) return <div className="error">{error}</div>;
 
@@ -194,15 +229,11 @@ function Pedidos() {
           <tr>
             <th>Fecha</th>
             <th>Caja</th>
-            <th>Active</th>
-            <th>Agua</th>
-            <th>Gatorade</th>
-            <th>Monster</th>
-            {/* {productos.map((producto) => (
+            {productos.map((producto) => (
               <th
                 key={producto.id}
               >{`${producto.nombre} $${producto.precio}`}</th>
-            ))} */}
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -227,9 +258,7 @@ function Pedidos() {
                   <input
                     type="number"
                     defaultValue={pedido.caja}
-                    onChange={(event) =>
-                      actualizaCierre("Caja", pedido.id, event)
-                    }
+                    ref={(el) => (prods.current[0] = el)}
                     disabled={
                       new Date(pedido.fecha).toISOString().slice(0, 10) ===
                       new Date().toISOString().slice(0, 10)
@@ -238,58 +267,32 @@ function Pedidos() {
                     }
                   />
                 </td>
-                <td>
-                  <input
-                    type="number"
-                    defaultValue={pedido.active}
-                    onChange={actualizaCierre}
-                    disabled={
-                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
-                      new Date().toISOString().slice(0, 10)
-                        ? false
-                        : true
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    defaultValue={pedido.agua}
-                    onChange={actualizaCierre}
-                    disabled={
-                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
-                      new Date().toISOString().slice(0, 10)
-                        ? false
-                        : true
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    defaultValue={pedido.gatorade}
-                    onChange={actualizaCierre}
-                    disabled={
-                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
-                      new Date().toISOString().slice(0, 10)
-                        ? false
-                        : true
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    defaultValue={pedido.monster}
-                    onChange={actualizaCierre}
-                    disabled={
-                      new Date(pedido.fecha).toISOString().slice(0, 10) ===
-                      new Date().toISOString().slice(0, 10)
-                        ? false
-                        : true
-                    }
-                  />
-                </td>
+                {pedido.productos.map((prod) => {
+                  return (
+                    <td key={prod.id}>
+                      <input
+                        key={prod.id}
+                        type="number"
+                        defaultValue={prod.cantidad}
+                        ref={(el) => (prods.current[prod.id] = el)}
+                        disabled={
+                          new Date(pedido.fecha).toISOString().slice(0, 10) ===
+                          new Date().toISOString().slice(0, 10)
+                            ? false
+                            : true
+                        }
+                      />
+                    </td>
+                  );
+                })}
+
+                {!renderizaHoy && (
+                  <td>
+                    <button onClick={() => actualizaCierre(pedido.id)}>
+                      Guardar
+                    </button>
+                  </td>
+                )}
               </tr>
             );
           })}
@@ -299,7 +302,7 @@ function Pedidos() {
                 <input
                   type="date"
                   defaultValue={new Date().toISOString().slice(0, 10)}
-                  disabled={false}
+                  disabled={true}
                 />
               </td>
               <td>
@@ -309,44 +312,24 @@ function Pedidos() {
                   min="0"
                   step="0.01"
                   ref={(el) => (prods.current[0] = el)}
-                  onChange={creaCierre}
                 />
               </td>
+
+              {productos.map((prod) => {
+                return (
+                  <td key={prod.id}>
+                    <input
+                      key={prod.id}
+                      type="number"
+                      defaultValue="0"
+                      min="0"
+                      ref={(el) => (prods.current[prod.id] = el)}
+                    />
+                  </td>
+                );
+              })}
               <td>
-                <input
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  ref={(el) => (prods.current[1] = el)}
-                  onChange={creaCierre}
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  ref={(el) => (prods.current[2] = el)}
-                  onChange={creaCierre}
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  ref={(el) => (prods.current[3] = el)}
-                  onChange={creaCierre}
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="0"
-                  defaultValue="0"
-                  ref={(el) => (prods.current[4] = el)}
-                  onChange={creaCierre}
-                />
+                <button onClick={creaCierre}>Guardar</button>
               </td>
             </tr>
           )}

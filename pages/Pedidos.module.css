@@ -1,0 +1,17 @@
+.table {
+  width: 30%;
+}
+
+@media (max-width: 700px) {
+  input[type="date"] {
+    width: 5.9rem;
+  }
+
+  input[type="number"] {
+    width: 3.3rem;
+  }
+
+  .button {
+    width: 40%;
+  }
+}

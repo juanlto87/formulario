@@ -15,6 +15,9 @@ export default function MainNavigation() {
             <Link to="/menu/pedidos">Pedidos</Link>
           </li>
           <li>
+            <Link to="/menu/ventas">Ventas</Link>
+          </li>
+          <li>
             <Link to="/">Reservas</Link>
           </li>
         </ul>

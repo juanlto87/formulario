@@ -168,7 +168,9 @@ export default function Formulario() {
           </div>
         </center>
         <center>
-          <button type="submit">Reservar</button>
+          <button className="button" type="submit">
+            Reservar
+          </button>
         </center>
       </form>
     </>

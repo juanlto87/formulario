@@ -52,7 +52,7 @@ h3 {
     background-size: cover;
   }
 
-  button {
+  .button {
     padding: 0.7rem;
     font-size: 1em;
     width: 80%;

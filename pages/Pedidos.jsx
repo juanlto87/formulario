@@ -1,6 +1,7 @@
-import {useState, useRef} from "react";
+import {useState, useRef, useEffect} from "react";
 import React from "react";
 import html2canvas from "html2canvas";
+import classes from "./Pedidos.module.css";
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -8,8 +9,8 @@ function Pedidos() {
   const [error, setError] = useState(null);
 
   const prods = useRef([]);
-  //const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
-  const servicio = "http://localhost:1234/";
+  const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
+  //const servicio = "http://localhost:1234/";
 
   const obtenerValoresProductos = () => {
     return prods.current.map((ref, index) => ({
@@ -19,9 +20,15 @@ function Pedidos() {
   };
 
   const validarPrecios = () => {
-    return prods.current.every((ref) => ref && ref.value > 0);
+    return prods.current.every((ref) => ref && ref.value >= 0);
   };
 
+  const handleKeyDown = (e, nextInputRef) => {
+    if (e.key === "Enter" && prods.current[nextInputRef]) {
+      e.preventDefault(); // Evitar que se envíe el formulario
+      prods.current[nextInputRef].focus(); // Enfocar el siguiente input
+    }
+  };
   function creaCierre() {
     const products = obtenerValoresProductos().filter(
       (producto) => producto.id !== 0
@@ -127,7 +134,7 @@ function Pedidos() {
       const canvas = await html2canvas(table, {
         backgroundColor: "#555",
         color: "#fff",
-        font: "10px Arial",
+        font: "40px Arial",
       });
       const blob = await canvasToBlob(canvas);
 
@@ -163,7 +170,7 @@ function Pedidos() {
 
         const raw = JSON.stringify({
           messaging_product: "whatsapp",
-          to: "593981810401",
+          to: "593981896493",
           type: "template",
           template: {
             name: "cierre_caja",
@@ -207,24 +214,27 @@ function Pedidos() {
       console.error("Error al convertir Canvas:", error);
     }
   }
-  fetch(`${servicio}productos/`)
-    .then((response) => response.json())
-    .then((data) => setProductos(data))
-    .catch((error) => setError("Error al cargar los pedidos"));
+  useEffect(() => {
+    fetch(`${servicio}productos/`)
+      .then((response) => response.json())
+      .then((data) => setProductos(data))
+      .catch((error) => setError("Error al cargar los pedidos"));
 
-  fetch(`${servicio}pedidos/`)
-    .then((response) => response.json())
-    .then((data) => setPedidos(data))
-    .catch((error) => setError("Error al cargar los pedidos"));
+    fetch(`${servicio}pedidos/`)
+      .then((response) => response.json())
+      .then((data) => setPedidos(data))
+      .catch((error) => setError("Error al cargar los pedidos"));
+  }, []);
 
   if (error) return <div className="error">{error}</div>;
 
   //const hoy = isToday("2025-01-04");
-  let renderizaHoy = true;
+  let renderizaHoy = true,
+    idPedido;
   return (
     <div>
       <h2>Lista de Cierres</h2>
-      <table>
+      <table className={classes.table}>
         <thead>
           <tr>
             <th>Fecha</th>
@@ -243,6 +253,7 @@ function Pedidos() {
               new Date().toISOString().slice(0, 10)
             ) {
               renderizaHoy = false;
+              idPedido = pedido.id;
             }
             return (
               <tr key={pedido.id}>
@@ -259,6 +270,7 @@ function Pedidos() {
                     type="number"
                     defaultValue={pedido.caja}
                     ref={(el) => (prods.current[0] = el)}
+                    onKeyDown={(e) => handleKeyDown(e, 1)}
                     disabled={
                       new Date(pedido.fecha).toISOString().slice(0, 10) ===
                       new Date().toISOString().slice(0, 10)
@@ -275,6 +287,7 @@ function Pedidos() {
                         type="number"
                         defaultValue={prod.cantidad}
                         ref={(el) => (prods.current[prod.id] = el)}
+                        onKeyDown={(e) => handleKeyDown(e, prod.id + 1)}
                         disabled={
                           new Date(pedido.fecha).toISOString().slice(0, 10) ===
                           new Date().toISOString().slice(0, 10)
@@ -285,14 +298,6 @@ function Pedidos() {
                     </td>
                   );
                 })}
-
-                {!renderizaHoy && (
-                  <td>
-                    <button onClick={() => actualizaCierre(pedido.id)}>
-                      Guardar
-                    </button>
-                  </td>
-                )}
               </tr>
             );
           })}
@@ -311,6 +316,7 @@ function Pedidos() {
                   defaultValue="0"
                   min="0"
                   step="0.01"
+                  onKeyDown={(e) => handleKeyDown(e, 1)}
                   ref={(el) => (prods.current[0] = el)}
                 />
               </td>
@@ -323,19 +329,26 @@ function Pedidos() {
                       type="number"
                       defaultValue="0"
                       min="0"
+                      onKeyDown={(e) => handleKeyDown(e, prod.id + 1)}
                       ref={(el) => (prods.current[prod.id] = el)}
                     />
                   </td>
                 );
               })}
-              <td>
-                <button onClick={creaCierre}>Guardar</button>
-              </td>
             </tr>
           )}
         </tbody>
       </table>
-      <button onClick={handleCaptureAndSend}>Enviar a WhatsApp</button>
+
+      <button
+        className={classes.button}
+        onClick={renderizaHoy ? creaCierre : () => actualizaCierre(idPedido)}
+      >
+        Guardar
+      </button>
+      <button className={classes.button} onClick={handleCaptureAndSend}>
+        Enviar a WhatsApp
+      </button>
     </div>
   );
 }

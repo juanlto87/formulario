@@ -49,6 +49,7 @@ export default function Ventas() {
 
       if (response.ok) {
         alert("Formulario enviado con éxito.");
+        setVenta(inicialVenta);
       } else {
         alert("Error al enviar el formulario.");
       }

@@ -1,18 +1,62 @@
 import classes from "./Ventas.module.css";
 import {useState, useEffect, useRef} from "react";
 
+const inicialVenta = {
+  formaPago: "Efectivo",
+  total: 0,
+  efectivo: 0,
+  cambio: 0,
+  pedidos: [],
+  cliente: "",
+};
+
 export default function Ventas() {
   //const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
   const servicio = "http://localhost:1234/";
-  function guardarVenta() {}
   const [productos, setProductos] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [venta, setVenta] = useState(inicialVenta);
   const [sugerencias, setSugerencias] = useState([]);
-  const [pedidos, setPedidos] = useState([]);
-  const cantidad = useRef();
-  const precio = useRef();
-  const subtotal = useRef();
-  const total = useRef();
+
+  function guardarVenta() {
+    const pedidos = venta.pedidos.filter((producto) => producto.cantidad !== 0);
+
+    const pedidoData = {
+      fecha: new Date().toISOString().slice(0, 10),
+      coach: "Juan",
+      ubicacion: "Condado",
+      productos: pedidos,
+      cliente: venta.cliente,
+      formaPago: 1,
+      total: +venta.total,
+      efectivo: +venta.efectivo,
+      cambio: +venta.cambio,
+      descuento: 0,
+    };
+    console.log(pedidoData);
+    creaBDD(pedidoData);
+  }
+
+  async function creaBDD(pedidoData) {
+    try {
+      const response = await fetch(`${servicio}ventas`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(pedidoData),
+      });
+
+      if (response.ok) {
+        alert("Formulario enviado con éxito.");
+      } else {
+        alert("Error al enviar el formulario.");
+      }
+    } catch (error) {
+      console.error("Error al crear el pedido:", error);
+      alert("Error al crear el pedido");
+    }
+  }
 
   useEffect(() => {
     fetch(`${servicio}productos/`)
@@ -37,28 +81,29 @@ export default function Ventas() {
     }
   };
 
-  // Manejar selección de una sugerencia
-  const handleSuggestionClick = (suggestion) => {
-    setInputValue("");
-    setSugerencias([]);
-    suggestion.cantidad = 1;
-    suggestion.subtotal = suggestion.precio * suggestion.cantidad;
-    setPedidos((prev) => {
-      const productoExistente = prev.some(
-        (item) => item.nombre === suggestion.nombre
-      );
-      if (productoExistente) return prev;
-      return [suggestion, ...prev];
-    });
-  };
-
   function handleAgregar() {
     console.log("Agregar");
   }
+  // Manejar selección de una sugerencia
+  const handleSuggestionClick = (sugerencia) => {
+    setInputValue("");
+    setSugerencias([]);
+    sugerencia.cantidad = 1;
+    sugerencia.precio = +sugerencia.precio;
+    sugerencia.subtotal = +sugerencia.precio * sugerencia.cantidad;
+    setVenta((prev) => {
+      const productoExistente = prev.pedidos.some(
+        (item) => item.nombre === sugerencia.nombre
+      );
+      if (productoExistente) return prev;
+      return {...prev, pedidos: [sugerencia, ...prev.pedidos]};
+    });
+  };
+
   function handleSubtotal(pedid, campo, valor) {
-    pedid[campo] = valor;
-    setPedidos((prev) => {
-      const nuevosPedidos = prev.map((pedido) =>
+    pedid[campo] = +valor;
+    setVenta((prev) => {
+      const nuevosPedidos = prev.pedidos.map((pedido) =>
         pedido.id === pedid.id
           ? {
               ...pedido,
@@ -68,28 +113,58 @@ export default function Ventas() {
           : pedido
       );
 
-      total.current.value = nuevosPedidos.reduce(
-        (acumulador, producto) => acumulador + producto.subtotal,
-        0
+      return {...prev, pedidos: nuevosPedidos};
+    });
+  }
+  function handleFormaPago({target}) {
+    setVenta({
+      ...venta,
+      efectivo: 0,
+      [target.name]: target.value,
+      cambio: !isNaN(target.value)
+        ? +target.value > +venta.total
+          ? +target.value - venta.total
+          : 0
+        : 0,
+    });
+  }
+
+  function eliminaProducto(id) {
+    setVenta((prev) => {
+      const pedidosFiltrados = prev.pedidos.filter(
+        (pedido) => pedido.id !== id
       );
-      return nuevosPedidos;
+      return {...prev, pedidos: pedidosFiltrados};
     });
   }
 
   useEffect(() => {
-    total.current.value = pedidos
+    const valorTotal = venta.pedidos
       .reduce((acumulador, producto) => acumulador + producto.subtotal, 0)
       .toFixed(2);
-  }, [pedidos]);
+
+    setVenta({
+      ...venta,
+      total: valorTotal,
+      efectivo: 0,
+      cambio: 0,
+    });
+  }, [venta.pedidos]);
 
   return (
     <>
       <div className={classes.ventas}>
-        <h2>Lista de Ventas</h2>
+        <h2>Ventas</h2>
 
         <p>
-          <label>Nombre: </label>
-          <input placeholder="Nombre " type="text" />
+          <label>Cliente: </label>
+          <input
+            name="cliente"
+            placeholder="Nombre "
+            type="text"
+            value={venta.cliente}
+            onChange={handleFormaPago}
+          />
         </p>
         <p>
           <label>Producto:</label>
@@ -103,13 +178,13 @@ export default function Ventas() {
         </p>
         {sugerencias.length > 0 && (
           <ul className={classes.ul}>
-            {sugerencias.map((suggestion, index) => (
+            {sugerencias.map((sugerencia, index) => (
               <li
                 key={index}
                 className={classes.li}
-                onClick={() => handleSuggestionClick(suggestion)}
+                onClick={() => handleSuggestionClick(sugerencia)}
               >
-                {suggestion.nombre}: ${suggestion.precio}
+                {sugerencia.nombre}: ${sugerencia.precio}
               </li>
             ))}
           </ul>
@@ -125,13 +200,14 @@ export default function Ventas() {
               </tr>
             </thead>
             <tbody>
-              {pedidos.map((pedido) => (
+              {venta.pedidos.map((pedido) => (
                 <tr key={pedido.id}>
                   <td>{pedido.nombre}</td>
                   <td>
                     <input
                       type="number"
                       value={pedido.cantidad}
+                      min="0"
                       onChange={(e) =>
                         handleSubtotal(pedido, "cantidad", e.target.value)
                       }
@@ -155,23 +231,48 @@ export default function Ventas() {
                       disabled
                     />
                   </td>
+                  <td>
+                    <span onClick={() => eliminaProducto(pedido.id)}>
+                      Remover
+                    </span>
+                  </td>
                 </tr>
               ))}
-              {total && (
+              {venta.total > 0 && (
                 <tr>
                   <td></td>
                   <td></td>
                   <td>Total:</td>
                   <td>
-                    <input type="number" ref={total} disabled />
+                    <input type="number" value={venta.total} disabled />
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+          <select name="formaPago" onChange={handleFormaPago}>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Credito">Crédito</option>
+          </select>
+          {venta.formaPago === "Efectivo" && (
+            <div>
+              <label>Efectivo: </label>
+              <input
+                type="number"
+                name="efectivo"
+                min="0"
+                step="0.01"
+                value={venta.efectivo}
+                onChange={handleFormaPago}
+              />
+              <label>Cambio: </label>
+              <input type="number" value={venta.cambio.toFixed(2)} disabled />
+            </div>
+          )}
         </div>
         <p>
-          <button>Guardar</button>
+          <button onClick={guardarVenta}>Guardar</button>
         </p>
       </div>
     </>

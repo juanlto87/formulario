@@ -11,8 +11,8 @@ const inicialVenta = {
 };
 
 export default function Ventas() {
-  //const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
-  const servicio = "http://localhost:1234/";
+  const servicio = "https://blackbox--blackbox-abeb3.us-central1.hosted.app/";
+  //const servicio = "http://localhost:1234/";
   const [productos, setProductos] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [venta, setVenta] = useState(inicialVenta);
@@ -71,6 +71,13 @@ export default function Ventas() {
     const value = e.target.value;
     setInputValue(value);
 
+    if (e.key === "Enter") {
+      handleAgregar();
+      setInputValue("");
+      setSugerencias([]);
+      return;
+    }
+
     // Filtrar opciones basadas en el input
     if (value) {
       const filteredSuggestions = productos.filter((option) =>
@@ -83,7 +90,21 @@ export default function Ventas() {
   };
 
   function handleAgregar() {
-    console.log("Agregar");
+    const producto = productos.find(
+      (producto) => producto.nombre.toLowerCase() === inputValue.toLowerCase(9)
+    );
+    const sugerencia = {...producto};
+    sugerencia.cantidad = 1;
+    sugerencia.precio = +producto.precio;
+    sugerencia.subtotal = +producto.precio * sugerencia.cantidad;
+
+    setVenta((prev) => {
+      const productoExistente = prev.pedidos.some(
+        (item) => item.nombre === sugerencia.nombre
+      );
+      if (productoExistente) return prev;
+      return {...prev, pedidos: [sugerencia, ...prev.pedidos]};
+    });
   }
   // Manejar selección de una sugerencia
   const handleSuggestionClick = (sugerencia) => {
@@ -173,6 +194,7 @@ export default function Ventas() {
             type="text"
             value={inputValue}
             onChange={handleInputChange}
+            onKeyDown={handleInputChange}
             placeholder="Buscar artículo..."
           />
           <label onClick={handleAgregar}>Agregar</label>

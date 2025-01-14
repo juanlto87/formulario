@@ -1,9 +1,17 @@
 .ventas {
   margin: auto;
   align-content: center;
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   position: relative;
+}
+
+.boton {
+  border: 1px solid #ccc;
+  padding: 5px;
+  cursor: pointer;
+  width: 40%;
+  text-align: center;
 }
 
 .ul {

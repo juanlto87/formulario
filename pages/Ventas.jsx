@@ -160,6 +160,10 @@ export default function Ventas() {
     });
   }
 
+  function handleCancel() {
+    setVenta(inicialVenta);
+  }
+
   useEffect(() => {
     const valorTotal = venta.pedidos
       .reduce((acumulador, producto) => acumulador + producto.subtotal, 0)
@@ -178,8 +182,8 @@ export default function Ventas() {
       <div className={classes.ventas}>
         <h2>Ventas</h2>
 
-        <p>
-          <label>Cliente: </label>
+        <p style={{display: "flex", alignItems: "left", gap: "10px"}}>
+          <label style={{width: "180px"}}>Cliente: </label>
           <input
             name="cliente"
             placeholder="Nombre "
@@ -188,8 +192,8 @@ export default function Ventas() {
             onChange={handleFormaPago}
           />
         </p>
-        <p>
-          <label>Producto:</label>
+        <p style={{display: "flex", alignItems: "left", gap: "10px"}}>
+          <label style={{width: "180px"}}>Producto:</label>
           <input
             type="text"
             value={inputValue}
@@ -197,7 +201,7 @@ export default function Ventas() {
             onKeyDown={handleInputChange}
             placeholder="Buscar artículo..."
           />
-          <label onClick={handleAgregar}>Agregar</label>
+          <a onClick={handleAgregar}>Añadir</a>
         </p>
         {sugerencias.length > 0 && (
           <ul className={classes.ul}>
@@ -215,12 +219,14 @@ export default function Ventas() {
         <div>
           <table>
             <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>$Precio</th>
-                <th>$Subtotal</th>
-              </tr>
+              {venta.total > 0 && (
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>$Precio</th>
+                  <th>$Subtotal</th>
+                </tr>
+              )}
             </thead>
             <tbody>
               {venta.pedidos.map((pedido) => (
@@ -273,14 +279,19 @@ export default function Ventas() {
               )}
             </tbody>
           </table>
-          <select name="formaPago" onChange={handleFormaPago}>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Transferencia">Transferencia</option>
-            <option value="Credito">Crédito</option>
-          </select>
-          {venta.formaPago === "Efectivo" && (
+          {venta.total > 0 && (
+            <>
+              <label>Elige la forma de pago: </label>
+              <select name="formaPago" onChange={handleFormaPago}>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Credito">Crédito</option>
+              </select>
+            </>
+          )}
+          {venta.formaPago === "Efectivo" && venta.total > 0 && (
             <div>
-              <label>Efectivo: </label>
+              <label>Efectivo recibido: </label>
               <input
                 type="number"
                 name="efectivo"
@@ -295,7 +306,12 @@ export default function Ventas() {
           )}
         </div>
         <p>
-          <button onClick={guardarVenta}>Guardar</button>
+          <button className={classes.boton} onClick={guardarVenta}>
+            Guardar
+          </button>
+          <button className={classes.boton} onClick={handleCancel}>
+            Cancelar
+          </button>
         </p>
       </div>
     </>
